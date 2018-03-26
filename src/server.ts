@@ -10,6 +10,8 @@ app.get('/', (req, res) => res.send('Hello World!.'));
 app
     .use(bodyParser.urlencoded({ extended: true }))
     .use(bodyParser.json())
+    .use(router.listRouter)
+    .use(router.itemRouter);
 
 app.listen(port);
 console.log(`App is running on port: ${port}`);
