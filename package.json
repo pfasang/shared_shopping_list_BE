@@ -1,0 +1,57 @@
+{
+  "name": "shared_shopping_list_be",
+  "version": "1.0.0",
+  "description": "Shared shopping list- Backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --exit --reporter spec --require ts-node/register test/**/*.test.ts",
+    "dev-database": "cd src/database &&cross-env NODE_ENV=development &&knex migrate:rollback &&knex migrate:latest &&knex seed:run",
+    "create-database": "cd src/database/sql && psql -U postgres -h localhost -a -f devDat.sql"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfasang/shared_shopping_list_BE.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pfasang/shared_shopping_list_BE/issues"
+  },
+  "homepage": "https://github.com/pfasang/shared_shopping_list_BE#readme",
+  "dependencies": {
+    "npm": "^5.8.0",
+    "bcrypt": "^1.0.3",
+    "bluebird": "^3.5.1",
+    "bookshelf": "^0.12.1",
+    "bookshelf-returning": "^0.3.1",
+    "express": "^4.16.2",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.3",
+    "joi": "^13.1.1",
+    "jsonwebtoken": "^8.1.0",
+    "knex": "^0.14.2",
+    "moment": "^2.20.1",
+    "pg": "^7.4.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^1.0.0",
+    "@types/bookshelf": "^0.9.7",
+    "@types/chai": "^4.1.1",
+    "@types/chai-http": "^3.0.3",
+    "@types/express": "^4.11.0",
+    "@types/joi": "^13.0.5",
+    "@types/knex": "^0.14.1",
+    "@types/mocha": "^2.2.46",
+    "@types/pg": "^7.4.1",
+    "body-parser": "^1.18.2",
+    "browser-sync": "^2.23.5",
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "cross-env": "^5.1.3",
+    "gulp-nodemon": "^2.2.1",
+    "mocha": "^4.1.0",
+    "nodemon": "^1.14.11",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
+  }
+}
