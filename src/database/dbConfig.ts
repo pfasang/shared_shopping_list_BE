@@ -1,6 +1,5 @@
 export default {
     dbOwner: 'sslistDevUser',
-    schemaName: "sslist",
 
     tables: {
         list: {

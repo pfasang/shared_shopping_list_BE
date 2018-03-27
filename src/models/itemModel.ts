@@ -6,6 +6,6 @@ export default class Item extends bookshelf.Model<Item> {
     hasTimestamps: string[] = [dbCfg.timestamps.created, dbCfg.timestamps.modified]
 
     get tableName() {
-        return `${dbCfg.schemaName}.${dbCfg.tables.item.name}`;
+        return `${dbCfg.tables.item.name}`;
     }
 }
