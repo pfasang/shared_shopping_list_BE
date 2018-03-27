@@ -1,46 +1,99 @@
 import * as Knex from "knex";
 import * as Promise from 'bluebird';
 import dbConfig from "../../dbConfig";
-
 exports.seed =  function (knex: Knex): Promise<any> {
     return knex(`${dbConfig.tables.item.name}`).del()
         .then(function () {
             return knex(`${dbConfig.tables.item.name}`).insert([
                 {
-                    name: "Item1",
-                    count: 3,
+                    name: "milk",
+                    count: 1,
                     list_id: 1,
                     isBought: true
                 },
                 {
-                    name: "Item2",
-                    count: 5,
+                    name: "bread",
+                    count: 1,
                     list_id: 1,
                 },
                 {
-                    name: "Item3",
-                    list_id: 2,
+                    name: "white yoghurt",
+                    count: 2,
+                    list_id: 1,
+                    isBought: true
                 },
                 {
-                    name: "Item4",
-                    count: 4,
+                    name: "chocolate yoghurt",
+                    count: 1,
                     list_id: 1,
                 },
                 {
-                    name: "Item5",
+                    name: "ham",
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "cheese",
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "wine",
+                    isBought: true,
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "beer",
+                    count: 6,
+                    list_id: 1,
+                },
+                {
+                    name: "mozarella",
                     count: 2,
                     list_id: 1,
                 },
                 {
-                    name: "Item6",
-                    count: 7,
-                    list_id: 2,
+                    name: "soap",
+                    isBought: true,
+                    count: 1,
+                    list_id: 1,
                 },
                 {
-                    name: "Item1",
-                    isBought: true,
+                    name: "paralen",
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "fish fillet",
                     count: 3,
-                    list_id: 2,
+                    list_id: 1,
+                },
+                {
+                    name: "magnesium",
+                    count: 2,
+                    list_id: 1,
+                },
+                {
+                    name: "paralen",
+                    isBought: true,
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "tooth brush",
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "toothpaste",
+                    count: 1,
+                    list_id: 1,
+                },
+                {
+                    name: "trash bags",
+                    count: 1,
+                    list_id: 1,
                 },
             ])
         })
