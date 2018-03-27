@@ -14,14 +14,17 @@ let readerToken: string;
 let writerToken: string;
 
 describe("Item tests", ()=> {
-/*    before(async () => {
-        let res = await login(validEmail, validPassword)
-        adminToken = res.body.token;
-        res = await login(validReaderEmail, validPassword)
-        readerToken = res.body.token;
-        res = await login(validWriterEmail, validPassword)
-        writerToken = res.body.token;
-    });*/
+        before(async () => {
+            await knex.migrate.rollback();
+            await knex.migrate.latest();
+            await knex.seed.run();
+            /*let res = await login(validEmail, validPassword)
+            adminToken = res.body.token;
+            res = await login(validReaderEmail, validPassword)
+            readerToken = res.body.token;
+            res = await login(validWriterEmail, validPassword)
+            writerToken = res.body.token;*/
+        });
 
     const baseUrl = "/items";
     const jsonType = "application/json";
@@ -39,6 +42,81 @@ describe("Item tests", ()=> {
                         expect(res.body).to.be.an("array");
                         const validatedBody = Joi.validate(res.body, itemListTestOutput);
                         expect(validatedBody.error).to.eq(null);
+                    });
+            });
+        });
+    });
+    describe("POST Create a item", () => {
+        const inputBody = {
+            name: "testItem",
+            list_id: 3,
+            count: 4
+        };
+        const createInput: any = {...inputBody};
+
+        describe("Correct create with admin", () => {
+            it("returns 201", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(createInput)
+                    .then(res => {
+                        expect(res.status).to.eq(201);
+                        expect(res.type).to.eq(jsonType);
+                        expect(res.body).to.be.an("object");
+                        const validatedBody = Joi.validate(res.body, itemTestOutput);
+                        expect(validatedBody.error).to.eq(null);
+                    });
+            });
+        });
+    });
+    describe("PUT Update Item", () => {
+        const inputBody = {
+            name: "toUpdateItem",
+            list_id: 1,
+            count: 3
+        };
+        let itemID: number;
+
+        describe("Correct UPDATE", () => {
+            it("returns 200", async () => {
+                const createRes = await
+                    chai.request(app)
+                        .post(baseUrl)
+                        .send(inputBody);
+                itemID = createRes.body.id;
+                inputBody.name = "updatedItem1";
+                const res = await
+                    chai.request(app)
+                        .patch(`${baseUrl}/${itemID}`)
+                        .send(inputBody);
+                expect(res.status).to.eq(200);
+                expect(res.type).to.eq(jsonType);
+                const validateBody = Joi.validate(res.body, itemTestOutput);
+                expect(validateBody.error).to.eq(null);
+                return res;
+            });
+        });
+    });
+    describe("DELETE Item", () => {
+        const inputBody = {
+            name: "toDeleteItem",
+            list_id: 2,
+            count: 7
+        };
+        let itemID: number;
+
+        describe("Correct DELETE", () => {
+            it("returns 204",() =>{
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        itemID = res.body.id;
+                        return chai.request(app)
+                            .del(`${baseUrl}/${itemID}`)
+                            .then(res => {
+                                expect(res.status).to.eq(204);
+                            });
                     });
             });
         });
