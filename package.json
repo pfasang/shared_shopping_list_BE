@@ -4,6 +4,7 @@
   "description": "Shared shopping list- Backend",
   "main": "index.js",
   "scripts": {
+    "start": "node src/server.ts",
     "test": "mocha --exit --reporter spec --require ts-node/register test/**/*.test.ts",
     "dev-database": "cd src/database &&cross-env NODE_ENV=development &&knex migrate:rollback &&knex migrate:latest &&knex seed:run",
     "create-database": "cd src/database/sql && psql -U postgres -h localhost -a -f database.sql"
