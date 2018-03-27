@@ -3,9 +3,9 @@ import * as Promise from 'bluebird';
 import dbConfig from "../../dbConfig";
 
 exports.seed =  function (knex: Knex): Promise<any> {
-    return knex(`${dbConfig.schemaName}.${dbConfig.tables.item.name}`).del()
+    return knex(`${dbConfig.tables.item.name}`).del()
         .then(function () {
-            return knex(`${dbConfig.schemaName}.${dbConfig.tables.item.name}`).insert([
+            return knex(`${dbConfig.tables.item.name}`).insert([
                 {
                     name: "Item1",
                     count: 3,

@@ -5,8 +5,7 @@ import dbConfig from '../dbConfig';
 const JSONitem = dbConfig.tables.item;
 
 exports.up = function (knex: Knex): Promise<any> {
-    return knex.schema.withSchema(dbConfig.schemaName)
-        .createTable(JSONitem.name, function (table) {
+    return knex.schema.createTable(JSONitem.name, function (table) {
             table.increments().unique().primary().unsigned();
             table.string(JSONitem.params.name).notNullable();
             table.integer(JSONitem.params.count).unsigned().defaultTo(1).notNullable();
@@ -18,5 +17,5 @@ exports.up = function (knex: Knex): Promise<any> {
 };
 
 exports.down = function (knex: Knex): Promise<any> {
-    return knex.schema.withSchema(dbConfig.schemaName).dropTableIfExists(JSONitem.name);
+    return knex.schema.dropTableIfExists(JSONitem.name);
 };

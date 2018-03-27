@@ -1,4 +1,3 @@
-DROP SCHEMA IF EXISTS sslist CASCADE;
 DROP DATABASE IF EXISTS "sslist_dev";
 CREATE DATABASE "sslist_dev"
     WITH
@@ -11,8 +10,5 @@ CREATE DATABASE "sslist_dev"
     CONNECTION LIMIT = -1;
 
 \connect "sslist_dev";
-
-CREATE SCHEMA "sslist"
-    AUTHORIZATION "postgres";
 
 --psql -U postgres -h localhost -a -f src/database/sql/database.sql
