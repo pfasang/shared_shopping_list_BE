@@ -11,6 +11,10 @@
     "dev-database": "cd src/database &&cross-env NODE_ENV=development &&knex migrate:rollback &&knex migrate:latest &&knex seed:run",
     "create-database": "cd src/database/sql && psql -U postgres -h localhost -a -f database.sql"
   },
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.x"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pfasang/shared_shopping_list_BE.git"
