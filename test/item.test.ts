@@ -14,17 +14,17 @@ let readerToken: string;
 let writerToken: string;
 
 describe("Item tests", ()=> {
-        before(async () => {
-            await knex.migrate.rollback();
-            await knex.migrate.latest();
-            await knex.seed.run();
-            /*let res = await login(validEmail, validPassword)
-            adminToken = res.body.token;
-            res = await login(validReaderEmail, validPassword)
-            readerToken = res.body.token;
-            res = await login(validWriterEmail, validPassword)
-            writerToken = res.body.token;*/
-        });
+    before(async () => {
+        await knex.migrate.rollback();
+        await knex.migrate.latest();
+        await knex.seed.run();
+        /*let res = await login(validEmail, validPassword)
+        adminToken = res.body.token;
+        res = await login(validReaderEmail, validPassword)
+        readerToken = res.body.token;
+        res = await login(validWriterEmail, validPassword)
+        writerToken = res.body.token;*/
+    });
 
     const baseUrl = "/items";
     const jsonType = "application/json";
@@ -45,7 +45,19 @@ describe("Item tests", ()=> {
                     });
             });
         });
+        describe("Wrong listID", () => {
+            const list_ID = 0;
+            it("returns 404", () => {
+                return chai.request(app)
+                    .get(`${baseUrl}/${list_ID}/items`)
+                    .catch(err => {
+                        expect(err.status).to.eq(404);
+                        expect(err.type).to.eq(jsonType);
+                    });
+            });
+        });
     });
+
     describe("POST Create a item", () => {
         const inputBody = {
             name: "testItem",
@@ -68,7 +80,48 @@ describe("Item tests", ()=> {
                     });
             });
         });
+        describe("Wrong input", () => {
+            const inputBody = {
+                name: "testItem",
+                list_id: "1",
+                count: 4
+            };
+            it("returns 400", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .catch(err => {
+                        expect(err.status).to.eq(400);
+                        expect(err.type).to.eq(jsonType);
+                    });
+            });
+        });
+        describe("Item already exists", () => {
+            const inputBody = {
+                name: "itemExists",
+                list_id: 3,
+                count: 3
+            };
+            it("returns 400", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        return chai.request(app)
+                            .post(baseUrl)
+                            .send(inputBody)
+                            .then(res=> {
+                                expect(res.status).to.not.eq(201);
+                            })
+                            .catch(err => {
+                                expect(err.status).to.eq(400);
+                                expect(err.response.type).to.eq(jsonType);
+                            });
+                    });
+            });
+        });
     });
+
     describe("PUT Update Item", () => {
         const inputBody = {
             name: "toUpdateItem",
