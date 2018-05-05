@@ -62,7 +62,8 @@ describe("Item tests", ()=> {
         const inputBody = {
             name: "testItem",
             list_id: 3,
-            count: 4
+            count: 4,
+            unit: "l"
         };
         const createInput: any = {...inputBody};
 

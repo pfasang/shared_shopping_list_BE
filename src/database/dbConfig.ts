@@ -16,6 +16,7 @@ export default {
                 id: "id",
                 name: "name",
                 count: "count",
+                unit: "unit",
                 isBought: "isBought",
                 list_id: "list_id",
             }

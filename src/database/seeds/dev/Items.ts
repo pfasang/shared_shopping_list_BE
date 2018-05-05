@@ -31,6 +31,7 @@ exports.seed =  function (knex: Knex): Promise<any> {
                     name: "ham",
                     count: 1,
                     list_id: 1,
+                    unit: "kg"
                 },
                 {
                     name: "cheese",
@@ -42,6 +43,7 @@ exports.seed =  function (knex: Knex): Promise<any> {
                     isBought: true,
                     count: 1,
                     list_id: 1,
+                    unit: "l"
                 },
                 {
                     name: "beer",
@@ -58,6 +60,7 @@ exports.seed =  function (knex: Knex): Promise<any> {
                     isBought: true,
                     count: 1,
                     list_id: 1,
+                    unit: "ks"
                 },
                 {
                     name: "paralen",
@@ -68,6 +71,7 @@ exports.seed =  function (knex: Knex): Promise<any> {
                     name: "fish fillet",
                     count: 3,
                     list_id: 1,
+                    unit: "kg"
                 },
                 {
                     name: "magnesium",
