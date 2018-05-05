@@ -54,3 +54,55 @@ export const createList = async (req, res) => {
 
     return res.status(201).json(listDat);
 };
+
+/**
+ * Function to update list in table lists
+ * @param req
+ * @param res
+ * @returns {Promise<void>} Returns updated list information in JSON object
+ */
+export const updateList = async (req, res) => {
+    //get id number from url
+    const listID = req.params.id;
+
+    //get list with given ID
+    const list = await new List().where({id : listID}).fetch();
+    if(!list) {
+        return res.status(404).json();
+    }
+
+    //Validate list input
+    const validatedBody = Joi.validate(req.body, listCreateInputValidation);
+    if (validatedBody.error) {
+        return res.status(400).json();
+    }
+
+    //update list to database
+    const updatedList = await Bookshelf.transaction(async (trx) => {
+        const updatedList = await list.save(req.body, {method:"update", transacting:trx, returning: "*", patch: true});
+        return updatedList;
+    });
+    return res.status(200).json(updatedList);
+};
+
+/**
+ * Function to delete list from table lists
+ * @param req
+ * @param res
+ * @returns {Promise<void>} Returns status code 204 in case of success
+ */
+export const deleteList = async (req, res) => {
+
+    //get id number from url
+    const listID = req.params.id;
+
+    //get list with given ID
+    const list = await new List().where({id : listID}).fetch();
+    if (!list) {
+        return res.status(404).json();
+    }
+
+    //delete list from database
+    list.destroy();
+    return res.status(204).json();
+};
