@@ -7,97 +7,97 @@ exports.seed =  function (knex: Knex): Promise<any> {
             return knex(`${dbConfig.tables.item.name}`).insert([
                 {
                     name: "milk",
-                    count: 1,
+                    count: "1",
                     list_id: 1,
                     isBought: true
                 },
                 {
                     name: "bread",
-                    count: 1,
+                    count: "1",
                     list_id: 1,
                 },
                 {
                     name: "white yoghurt",
-                    count: 2,
+                    count: "3",
                     list_id: 1,
                     isBought: true
                 },
                 {
                     name: "chocolate yoghurt",
-                    count: 1,
+                    count: "4",
                     list_id: 1,
                 },
                 {
                     name: "ham",
-                    count: 1,
+                    count: "0.25",
                     list_id: 1,
                     unit: "kg"
                 },
                 {
                     name: "cheese",
-                    count: 1,
+                    count: "2",
                     list_id: 1,
                 },
                 {
                     name: "wine",
                     isBought: true,
-                    count: 1,
+                    count: "0.75",
                     list_id: 1,
                     unit: "l"
                 },
                 {
                     name: "beer",
-                    count: 6,
+                    count: "6",
                     list_id: 1,
                 },
                 {
                     name: "mozarella",
-                    count: 2,
+                    count: "2",
                     list_id: 1,
                 },
                 {
                     name: "soap",
                     isBought: true,
-                    count: 1,
-                    list_id: 1,
-                    unit: "ks"
+                    count: "1",
+                    list_id: 2,
+                    unit: "x"
                 },
                 {
                     name: "paralen",
-                    count: 1,
-                    list_id: 1,
+                    count: "1",
+                    list_id: 3,
                 },
                 {
                     name: "fish fillet",
-                    count: 3,
+                    count: "3",
                     list_id: 1,
                     unit: "kg"
                 },
                 {
                     name: "magnesium",
-                    count: 2,
+                    count: "2",
                     list_id: 1,
                 },
                 {
                     name: "paralen",
                     isBought: true,
-                    count: 1,
+                    count: "1",
                     list_id: 1,
                 },
                 {
                     name: "tooth brush",
-                    count: 1,
-                    list_id: 1,
+                    count: "1",
+                    list_id: 2,
                 },
                 {
                     name: "toothpaste",
-                    count: 1,
-                    list_id: 1,
+                    count: "1",
+                    list_id: 2,
                 },
                 {
                     name: "trash bags",
-                    count: 1,
-                    list_id: 1,
+                    count: "4",
+                    list_id: 2,
                 },
             ])
         })

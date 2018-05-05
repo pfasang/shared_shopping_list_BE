@@ -62,7 +62,7 @@ describe("Item tests", ()=> {
         const inputBody = {
             name: "testItem",
             list_id: 3,
-            count: 4,
+            count: "0.5",
             unit: "l"
         };
         const createInput: any = {...inputBody};
@@ -83,17 +83,39 @@ describe("Item tests", ()=> {
         });
         describe("Wrong input", () => {
             const inputBody = {
-                name: "testItem",
-                list_id: "1",
-                count: 4
+                name: "testItem2",
+                list_id: "sss",
+                count: "2"
             };
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
                     .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(201);
+                    })
                     .catch(err => {
                         expect(err.status).to.eq(400);
-                        expect(err.type).to.eq(jsonType);
+                        expect(err.response.type).to.eq(jsonType);
+                    });
+            });
+        });
+        describe("Wrong count value", () => {
+            const inputBody = {
+                name: "testItem3",
+                list_id: 1,
+                count: "2."
+            };
+            it("returns 400", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(201);
+                    })
+                    .catch(err => {
+                        expect(err.status).to.eq(400);
+                        expect(err.response.type).to.eq(jsonType);
                     });
             });
         });
@@ -101,7 +123,7 @@ describe("Item tests", ()=> {
             const inputBody = {
                 name: "itemExists",
                 list_id: 3,
-                count: 3
+                count: "3"
             };
             it("returns 400", () => {
                 return chai.request(app)
@@ -127,7 +149,7 @@ describe("Item tests", ()=> {
         const inputBody = {
             name: "toUpdateItem",
             list_id: 1,
-            count: 3
+            count: "2.6897"
         };
         let itemID: number;
 
@@ -155,7 +177,7 @@ describe("Item tests", ()=> {
         const inputBody = {
             name: "toDeleteItem",
             list_id: 2,
-            count: 7
+            count: "7"
         };
         let itemID: number;
 

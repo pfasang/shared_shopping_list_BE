@@ -34,7 +34,6 @@ export const createItem = async (req, res) => {
     if (validatedBody.error) {
         return res.status(400).json();
     }
-
     //check if is email in use
     const inputName = req.body.name;
     const inputListID = req.body.list_id;
