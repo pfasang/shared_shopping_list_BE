@@ -84,3 +84,25 @@ export const updateList = async (req, res) => {
     });
     return res.status(200).json(updatedList);
 };
+
+/**
+ * Function to delete list from table lists
+ * @param req
+ * @param res
+ * @returns {Promise<void>} Returns status code 204 in case of success
+ */
+export const deleteList = async (req, res) => {
+
+    //get id number from url
+    const listID = req.params.id;
+
+    //get list with given ID
+    const list = await new List().where({id : listID}).fetch();
+    if (!list) {
+        return res.status(404).json();
+    }
+
+    //delete list from database
+    list.destroy();
+    return res.status(204).json();
+};

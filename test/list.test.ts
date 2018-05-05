@@ -183,4 +183,72 @@ describe("List tests", ()=> {
         });
     });
 
+    describe("DELETE List", () => {
+        const inputBody = {
+            title: "toDeleteList",
+            owner_id: 2,
+        };
+        let listID: number;
+
+        describe("Correct DELETE with no items in it", () => {
+            it("returns 204",() =>{
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        listID = res.body.id;
+                        return chai.request(app)
+                            .del(`${baseUrl}/${listID}`)
+                            .then(res => {
+                                expect(res.status).to.eq(204);
+                            });
+                    });
+            });
+        });
+        describe("Correct DELETE with all related items", () => {
+            const inputBody = {
+                title: "toDeleteListWithItems",
+                owner_id: 2,
+            };
+            const itemBody = {
+                name: "itemInDeleteList",
+                list_id: 0,
+                count: "3"
+            };
+            it("returns 204",() =>{
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        listID = res.body.id;
+                        itemBody.list_id = listID;
+                        return chai.request(app)
+                            .post("/items")
+                            .send(itemBody)
+                            .then(res => {
+                                return chai.request(app)
+                                    .del(`${baseUrl}/${listID}`)
+                                    .then(res => {
+                                        expect(res.status).to.eq(204);
+                                    });
+                            });
+                    });
+            });
+        });
+        describe("Wrong ID in URL", () => {
+            it("returns 404", () => {
+                return chai.request(app)
+                    .del(`${baseUrl}/999999`)
+                    .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(204);
+                    })
+                    .catch(err => {
+                        expect(err.status).to.eq(404);
+                        expect(err.response.type).to.eq(jsonType);
+                    });
+            });
+        });
+    });
+
 });

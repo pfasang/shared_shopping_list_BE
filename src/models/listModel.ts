@@ -17,4 +17,5 @@ export default class List extends bookshelf.Model<List> {
             dbCfg.tables.item.params.id
         );
     }
+    static dependents = ["item"];
 }
