@@ -6,7 +6,7 @@ import knex from "../src/database/knex";
 import {itemTestOutput, itemListTestOutput} from "../src/utilities/validation/itemValidation";
 const app = "http://localhost:" + port;
 const chaiHttp = require("chai-http");
-const expect = chai.expect, validEmail = "marek.drnzik@materna.com", validPassword = "12345678", validWriterEmail = "john.doe@materna.com", validReaderEmail = "samuel.svelta@materna.com";
+const expect = chai.expect;
 chai.use(chaiHttp);
 
 let adminToken: string;
