@@ -13,7 +13,7 @@ export const getAllItems = async (req, res) => {
     //get list id number from url
     const listID = req.params.id;
     //get all items from database
-    const items = await new Item().where({list_id : listID}).orderBy(dbConfig.tables.item.params.isBought).orderBy(dbConfig.tables.item.params.name).fetchAll();
+    const items = await new Item().where({list_id : listID}).orderBy(dbConfig.tables.item.params.name).fetchAll();
 
     if(!items) {
         return res.status(404).json();
