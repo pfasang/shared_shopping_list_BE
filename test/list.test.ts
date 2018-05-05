@@ -45,4 +45,70 @@ describe("List tests", ()=> {
             });
         });
     });
+
+    describe("POST Create a list", () => {
+        const inputBody = {
+            title: "createList",
+            owner_id: 1
+        };
+        const createInput: any = {...inputBody};
+
+        describe("Correct create", () => {
+            it("returns 201", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(createInput)
+                    .then(res => {
+                        expect(res.status).to.eq(201);
+                        expect(res.type).to.eq(jsonType);
+                        expect(res.body).to.be.an("object");
+                        const validatedBody = Joi.validate(res.body, listTestOutput);
+                        expect(validatedBody.error).to.eq(null);
+                    });
+            });
+        });
+
+        describe("Wrong input", () => {
+            const inputBody = {
+                title: 654981,
+                owner_id: 1
+            };
+            it("returns 400", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(201);
+                    })
+                    .catch(err => {
+                        expect(err.status).to.eq(400);
+                        expect(err.response.type).to.eq(jsonType);
+                    });
+            });
+        });
+
+        describe("List already exists", () => {
+            const inputBody = {
+                title: "listExists",
+                owner_id: 2
+            };
+            it("returns 400", () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        return chai.request(app)
+                            .post(baseUrl)
+                            .send(inputBody)
+                            .then(res=> {
+                                expect(res.status).to.not.eq(201);
+                            })
+                            .catch(err => {
+                                expect(err.status).to.eq(400);
+                                expect(err.response.type).to.eq(jsonType);
+                            });
+                    });
+            });
+        });
+    });
 });
