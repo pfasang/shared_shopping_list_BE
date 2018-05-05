@@ -9,9 +9,7 @@ const chaiHttp = require("chai-http");
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-let adminToken: string;
-let readerToken: string;
-let writerToken: string;
+let adminToken: string, readerToken: string, writerToken: string;
 
 describe("Item tests", ()=> {
     before(async () => {
@@ -52,7 +50,7 @@ describe("Item tests", ()=> {
                     .get(`${baseUrl}/${list_ID}/items`)
                     .catch(err => {
                         expect(err.status).to.eq(404);
-                        expect(err.type).to.eq(jsonType);
+                        expect(err.response.type).to.eq(jsonType);
                     });
             });
         });
@@ -67,7 +65,7 @@ describe("Item tests", ()=> {
         };
         const createInput: any = {...inputBody};
 
-        describe("Correct create with admin", () => {
+        describe("Correct create", () => {
             it("returns 201", () => {
                 return chai.request(app)
                     .post(baseUrl)
@@ -172,6 +170,52 @@ describe("Item tests", ()=> {
                 return res;
             });
         });
+        describe("Wrong ID in URL", () => {
+            it("returns 404", () => {
+                const inputBody = {
+                    name: "wrongIDinURL",
+                    list_id: 1,
+                    count: "2"
+                };
+                return chai.request(app)
+                    .patch(`${baseUrl}/999999`)
+                    .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(200);
+                    })
+                    .catch(err => {
+                        expect(err.status).to.eq(404);
+                        expect(err.response.type).to.eq(jsonType);
+                    });
+            });
+        });
+        describe("Wrong fields", () => {
+            const inputBody = {
+                name: "wrongFields",
+                list_id: 1,
+                count: "2"
+            };
+            it("returns 400", async () => {
+                return chai.request(app)
+                    .post(baseUrl)
+                    .send(inputBody)
+                    .then(res => {
+                        itemID = res.body.id;
+                        inputBody.name = "ss";
+                        return chai.request(app)
+                            .patch(`${baseUrl}/${itemID}`)
+                            .send(inputBody)
+                            .then(res => {
+                                expect(res.status).to.not.eq(200);
+                            })
+                            .catch(err => {
+                                expect(err.status).to.eq(400);
+                                expect(err.response.type).to.eq(jsonType);
+                            });
+                    });
+            });
+        });
+
     });
     describe("DELETE Item", () => {
         const inputBody = {
@@ -196,5 +240,21 @@ describe("Item tests", ()=> {
                     });
             });
         });
+        describe("Wrong ID in URL", () => {
+            it("returns 404", () => {
+                return chai.request(app)
+                    .del(`${baseUrl}/999999`)
+                    .send(inputBody)
+                    .then(res => {
+                        expect(res.status).to.not.eq(204);
+                    })
+                    .catch(err => {
+                        expect(err.status).to.eq(404);
+                        expect(err.response.type).to.eq(jsonType);
+                    });
+            });
+        });
+
     });
+
 });
