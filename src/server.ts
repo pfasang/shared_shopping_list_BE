@@ -3,7 +3,8 @@ const bodyParser = require("body-parser");
 import * as router from "./routers";
 import * as passport from "passport"
 import * as FacebookStrategy from 'passport-facebook';
-import {facebook} from './login/config';
+import * as GoogleStrategy from 'passport-google-oauth20';
+import {facebook,google} from './login/config';
 
 const app = express();
 
@@ -16,10 +17,18 @@ const transformFacebookProfile = (profile) => ({
     avatar: profile.picture.data.url,
 });
 
+// Transform Google profile into user object
+const transformGoogleProfile = (profile) => ({
+    name: profile.displayName,
+    avatar: profile.image.url,
+});
 
 // Register Facebook Passport strategy
 passport.use(new FacebookStrategy(facebook, async (accessToken, refreshToken, profile, done) => done(null, transformFacebookProfile(profile._json))));
 
+// Register Google Passport strategy
+passport.use(new GoogleStrategy(google, async (accessToken, refreshToken, profile, done) => done(null, transformGoogleProfile(profile._json))
+));
 
 // Serialize user into the sessions
 passport.serializeUser((user, done) => done(null, user));
