@@ -1,7 +1,7 @@
 import {Item, List} from '../models';
 import Bookshelf from '../database/bookshelf';
 import * as Joi from 'joi';
-import {listCreateInputValidation} from "../utilities/validation/listValidation";
+import {listCreateInputValidation, listUpdateInputValidation} from "../utilities/validation/listValidation";
 import dbConfig from "../database/dbConfig";
 
 /***
@@ -12,7 +12,7 @@ import dbConfig from "../database/dbConfig";
  */
 export const getAllLists = async (req, res) => {
     //get all lists from database
-    const lists = await new List().orderBy(dbConfig.tables.list.params.title).fetchAll();
+    const lists = await new List().where({owner_id: req.user.id}).orderBy(dbConfig.tables.list.params.title).fetchAll();
 
     if(!lists) {
         return res.status(404).json();
@@ -27,27 +27,27 @@ export const getAllLists = async (req, res) => {
  * @returns {Promise<void>} Returns list information in JSON object
  */
 export const createList = async (req, res) => {
-    const inputTitle = req.body.title;
-
+    const inputBody = req.body;
+    inputBody.owner_id = req.user.id;
     //Validate list input
-    const validatedBody = Joi.validate(req.body, listCreateInputValidation);
+    const validatedBody = Joi.validate(inputBody, listCreateInputValidation);
     if (validatedBody.error) {
         return res.status(400).json();
     }
 
      //check if list exists in db
-     const list = await new List().where({title: inputTitle}).fetch();
+     const list = await new List().where({title: inputBody.title}).fetch();
      if(list) {
          return res.status(400).json();
      }
 
     //add list to database
     await Bookshelf.transaction(async (trx) => {
-        const newList = await new List(req.body).save(null, {method: "insert", transacting:trx, returning: "*"});
+        const newList = await new List(inputBody).save(null, {method: "insert", transacting:trx, returning: "*"});
         return newList;
     });
 
-    const listDat = await new List().where({title : inputTitle}).fetch();
+    const listDat = await new List().where({title : inputBody.title}).fetch();
     if(!listDat) {
         return res.status(404).json();
     }
@@ -62,17 +62,10 @@ export const createList = async (req, res) => {
  * @returns {Promise<void>} Returns updated list information in JSON object
  */
 export const updateList = async (req, res) => {
-    //get id number from url
-    const listID = req.params.id;
-
-    //get list with given ID
-    const list = await new List().where({id : listID}).fetch();
-    if(!list) {
-        return res.status(404).json();
-    }
+    const list = req.entity;
 
     //Validate list input
-    const validatedBody = Joi.validate(req.body, listCreateInputValidation);
+    const validatedBody = Joi.validate(req.body, listUpdateInputValidation);
     if (validatedBody.error) {
         return res.status(400).json();
     }
@@ -93,16 +86,24 @@ export const updateList = async (req, res) => {
  */
 export const deleteList = async (req, res) => {
 
-    //get id number from url
-    const listID = req.params.id;
-
-    //get list with given ID
-    const list = await new List().where({id : listID}).fetch();
-    if (!list) {
-        return res.status(404).json();
-    }
+    const list = req.entity;
 
     //delete list from database
     list.destroy();
     return res.status(204).json();
+};
+
+export const listAuthorPermission = async (req, res, next) => {
+    //get id number from url
+    const entityID = req.params.id;
+    const userID = req.user.id;
+    const entity = await new List().where({id : entityID}).fetch();
+    if (!entity) {
+        return res.status(404).json();
+    }
+    if (entity.attributes.owner_id != userID) {
+        return res.status(403).json();
+    }
+    req.entity = entity;
+    next();
 };

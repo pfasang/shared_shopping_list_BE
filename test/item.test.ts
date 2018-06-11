@@ -2,26 +2,22 @@ import * as chai from "chai";
 import * as Joi from "joi";
 import {port} from "../src/server";
 import knex from "../src/database/knex";
-//import {login, randomFields} from "./utilities/testHelper";
 import {itemTestOutput, itemListTestOutput} from "../src/utilities/validation/itemValidation";
+import {login} from "../src/utilities/testHelper";
 const app = "http://localhost:" + port;
 const chaiHttp = require("chai-http");
-const expect = chai.expect;
 chai.use(chaiHttp);
+const expect = chai.expect, validEmail = 'john.doe@latasna.com', validPassword = '12345678';
 
-let adminToken: string, readerToken: string, writerToken: string;
+let validToken: string;
 
 describe("Item tests", ()=> {
     before(async () => {
         await knex.migrate.rollback();
         await knex.migrate.latest();
         await knex.seed.run();
-        /*let res = await login(validEmail, validPassword)
-        adminToken = res.body.token;
-        res = await login(validReaderEmail, validPassword)
-        readerToken = res.body.token;
-        res = await login(validWriterEmail, validPassword)
-        writerToken = res.body.token;*/
+        let res = await login(validEmail, validPassword);
+        validToken = res.body.token;
     });
 
     const baseUrl = "/items";
@@ -34,6 +30,7 @@ describe("Item tests", ()=> {
             it("returns 200", () => {
                 return chai.request(app)
                     .get(`${baseUrl}/${list_ID}/items`)
+                    .set("token", validToken)
                     .then(res => {
                         expect(res.status).to.eq(200);
                         expect(res.type).to.eq(jsonType);
@@ -48,6 +45,7 @@ describe("Item tests", ()=> {
             it("returns 404", () => {
                 return chai.request(app)
                     .get(`${baseUrl}/${list_ID}/items`)
+                    .set("token", validToken)
                     .catch(err => {
                         expect(err.status).to.eq(404);
                         expect(err.response.type).to.eq(jsonType);
@@ -69,6 +67,7 @@ describe("Item tests", ()=> {
             it("returns 201", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(createInput)
                     .then(res => {
                         expect(res.status).to.eq(201);
@@ -88,6 +87,7 @@ describe("Item tests", ()=> {
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(201);
@@ -107,6 +107,7 @@ describe("Item tests", ()=> {
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(201);
@@ -126,10 +127,12 @@ describe("Item tests", ()=> {
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         return chai.request(app)
                             .post(baseUrl)
+                            .set("token", validToken)
                             .send(inputBody)
                             .then(res=> {
                                 expect(res.status).to.not.eq(201);
@@ -156,12 +159,14 @@ describe("Item tests", ()=> {
                 const createRes = await
                     chai.request(app)
                         .post(baseUrl)
+                        .set("token", validToken)
                         .send(inputBody);
                 itemID = createRes.body.id;
                 inputBody.name = "updatedItem1";
                 const res = await
                     chai.request(app)
                         .patch(`${baseUrl}/${itemID}`)
+                        .set("token", validToken)
                         .send(inputBody);
                 expect(res.status).to.eq(200);
                 expect(res.type).to.eq(jsonType);
@@ -179,6 +184,7 @@ describe("Item tests", ()=> {
                 };
                 return chai.request(app)
                     .patch(`${baseUrl}/999999`)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(200);
@@ -198,12 +204,14 @@ describe("Item tests", ()=> {
             it("returns 400", async () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         itemID = res.body.id;
                         inputBody.name = "ss";
                         return chai.request(app)
                             .patch(`${baseUrl}/${itemID}`)
+                            .set("token", validToken)
                             .send(inputBody)
                             .then(res => {
                                 expect(res.status).to.not.eq(200);
@@ -229,11 +237,13 @@ describe("Item tests", ()=> {
             it("returns 204",() =>{
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         itemID = res.body.id;
                         return chai.request(app)
                             .del(`${baseUrl}/${itemID}`)
+                            .set("token", validToken)
                             .then(res => {
                                 expect(res.status).to.eq(204);
                             });
@@ -244,6 +254,7 @@ describe("Item tests", ()=> {
             it("returns 404", () => {
                 return chai.request(app)
                     .del(`${baseUrl}/999999`)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(204);

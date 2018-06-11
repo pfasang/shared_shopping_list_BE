@@ -11,3 +11,7 @@ export const listCreateInputValidation = Joi.object().keys({
     title: Joi.string().regex(/^[ a-zA-Z0-9_-]{3,30}$/).required(),
     owner_id: Joi.number().integer().required().min(1),
 });
+
+export const listUpdateInputValidation = Joi.object().keys({
+    title: Joi.string().regex(/^[ a-zA-Z0-9_-]{3,30}$/).required(),
+});

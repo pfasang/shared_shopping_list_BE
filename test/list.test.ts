@@ -2,28 +2,22 @@ import * as chai from "chai";
 import * as Joi from "joi";
 import {port} from "../src/server";
 import knex from "../src/database/knex";
-//import {login, randomFields} from "./utilities/testHelper";
 import {listTestOutput, listListTestOutput} from "../src/utilities/validation/listValidation";
+import {login} from "../src/utilities/testHelper";
 const app = "http://localhost:" + port;
 const chaiHttp = require("chai-http");
-const expect = chai.expect;
+const expect = chai.expect, validEmail = 'john.doe@latasna.com', validPassword = '12345678';
 chai.use(chaiHttp);
 
-let adminToken: string;
-let readerToken: string;
-let writerToken: string;
+let validToken: string;
 
 describe("List tests", ()=> {
     before(async () => {
         await knex.migrate.rollback();
         await knex.migrate.latest();
         await knex.seed.run();
-        /*let res = await login(validEmail, validPassword)
-        adminToken = res.body.token;
-        res = await login(validReaderEmail, validPassword)
-        readerToken = res.body.token;
-        res = await login(validWriterEmail, validPassword)
-        writerToken = res.body.token;*/
+        let res = await login(validEmail, validPassword)
+        validToken = res.body.token;
     });
 
     const baseUrl = "/lists";
@@ -35,6 +29,7 @@ describe("List tests", ()=> {
             it("returns 200", () => {
                 return chai.request(app)
                     .get(`${baseUrl}`)
+                    .set("token", validToken)
                     .then(res => {
                         expect(res.status).to.eq(200);
                         expect(res.type).to.eq(jsonType);
@@ -49,7 +44,6 @@ describe("List tests", ()=> {
     describe("POST Create a list", () => {
         const inputBody = {
             title: "createList",
-            owner_id: 1
         };
         const createInput: any = {...inputBody};
 
@@ -57,6 +51,7 @@ describe("List tests", ()=> {
             it("returns 201", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(createInput)
                     .then(res => {
                         expect(res.status).to.eq(201);
@@ -71,11 +66,11 @@ describe("List tests", ()=> {
         describe("Wrong input", () => {
             const inputBody = {
                 title: 654981,
-                owner_id: 1
             };
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(201);
@@ -90,15 +85,16 @@ describe("List tests", ()=> {
         describe("List already exists", () => {
             const inputBody = {
                 title: "listExists",
-                owner_id: 2
             };
             it("returns 400", () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         return chai.request(app)
                             .post(baseUrl)
+                            .set("token", validToken)
                             .send(inputBody)
                             .then(res=> {
                                 expect(res.status).to.not.eq(201);
@@ -115,7 +111,6 @@ describe("List tests", ()=> {
     describe("PATCH Update List", () => {
         const inputBody = {
             title: "toUpdateList",
-            owner_id: 3,
         };
         let listID: number;
 
@@ -124,12 +119,14 @@ describe("List tests", ()=> {
                 const createRes = await
                     chai.request(app)
                         .post(baseUrl)
+                        .set("token", validToken)
                         .send(inputBody);
                 listID = createRes.body.id;
                 inputBody.title = "updatedList1";
                 const res = await
                     chai.request(app)
                         .patch(`${baseUrl}/${listID}`)
+                        .set("token", validToken)
                         .send(inputBody);
                 expect(res.status).to.eq(200);
                 expect(res.type).to.eq(jsonType);
@@ -142,10 +139,10 @@ describe("List tests", ()=> {
             it("returns 404", () => {
                 const inputBody = {
                     title: "wrongIDinURL",
-                    owner_id: 3,
                 };
                 return chai.request(app)
                     .patch(`${baseUrl}/999999`)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(200);
@@ -159,17 +156,18 @@ describe("List tests", ()=> {
         describe("Wrong fields", () => {
             const inputBody = {
                 title: "wrongFields",
-                owner_id: 3,
             };
             it("returns 400", async () => {
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         listID = res.body.id;
                         inputBody.title = "ss";
                         return chai.request(app)
                             .patch(`${baseUrl}/${listID}`)
+                            .set("token", validToken)
                             .send(inputBody)
                             .then(res => {
                                 expect(res.status).to.not.eq(200);
@@ -186,7 +184,6 @@ describe("List tests", ()=> {
     describe("DELETE List", () => {
         const inputBody = {
             title: "toDeleteList",
-            owner_id: 2,
         };
         let listID: number;
 
@@ -194,11 +191,13 @@ describe("List tests", ()=> {
             it("returns 204",() =>{
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         listID = res.body.id;
                         return chai.request(app)
                             .del(`${baseUrl}/${listID}`)
+                            .set("token", validToken)
                             .then(res => {
                                 expect(res.status).to.eq(204);
                             });
@@ -208,7 +207,6 @@ describe("List tests", ()=> {
         describe("Correct DELETE with all related items", () => {
             const inputBody = {
                 title: "toDeleteListWithItems",
-                owner_id: 2,
             };
             const itemBody = {
                 name: "itemInDeleteList",
@@ -218,16 +216,19 @@ describe("List tests", ()=> {
             it("returns 204",() =>{
                 return chai.request(app)
                     .post(baseUrl)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         listID = res.body.id;
                         itemBody.list_id = listID;
                         return chai.request(app)
                             .post("/items")
+                            .set("token", validToken)
                             .send(itemBody)
                             .then(res => {
                                 return chai.request(app)
                                     .del(`${baseUrl}/${listID}`)
+                                    .set("token", validToken)
                                     .then(res => {
                                         expect(res.status).to.eq(204);
                                     });
@@ -239,6 +240,7 @@ describe("List tests", ()=> {
             it("returns 404", () => {
                 return chai.request(app)
                     .del(`${baseUrl}/999999`)
+                    .set("token", validToken)
                     .send(inputBody)
                     .then(res => {
                         expect(res.status).to.not.eq(204);
