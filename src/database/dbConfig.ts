@@ -2,6 +2,15 @@ export default {
     dbOwner: 'sslistDevUser',
 
     tables: {
+        user: {
+            name: 'users',
+            params: {
+                id: 'id',
+                name: "name",
+                email: "email",
+                password: 'password',
+            }
+        },
         list: {
             name: "lists",
             params: {
